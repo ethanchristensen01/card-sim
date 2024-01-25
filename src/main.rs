@@ -26,9 +26,9 @@ fn main() {
         .expect("Missing first argument: experiment count")
         .parse::<u32>()
         .expect("Couldn't parse experiment count");
-    if let Some(num_threads) = args.get(1).map(|a| a.parse::<usize>()) {
+    if let Some(num_threads) = args.get(1).map(|a| a.parse::<u8>()) {
         let num_threads = num_threads.expect("couldn't parse thread count");
-        ThreadPoolBuilder::new().num_threads(num_threads).build_global().unwrap();
+        ThreadPoolBuilder::new().num_threads(num_threads.into()).build_global().unwrap();
     }
     let deck = card::Deck::default();
     
