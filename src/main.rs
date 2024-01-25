@@ -8,7 +8,7 @@ use std::env;
 
 #[inline]
 fn experiment_condition (cards: [Option<Card>; 2]) -> bool {
-    assert!(cards.len() == 2, "experiment expects two cards");
+    assert!(!cards.iter().any(Option::is_none), "experiment expects two cards");
     let one_diamond = cards.iter()
         .filter_map(|&c| c)
         .any(|c| c.suit == Suit::Diamonds);
@@ -52,7 +52,7 @@ fn main() {
             |rng, _| deck.draw_random(rng)
         )
         .map(
-            |e| experiment_condition(e) 
+            experiment_condition
         )
         .fold(
             PosNegCount::default,
