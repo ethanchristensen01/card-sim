@@ -28,7 +28,7 @@ pub enum Rank {
 #[derive(Debug)]
 pub struct RankNumberMismatch();
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Card {
     pub suit: Suit,
     pub rank: Rank,

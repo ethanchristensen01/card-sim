@@ -6,11 +6,18 @@ use rayon::ThreadPoolBuilder;
 use indicatif::{ParallelProgressIterator, ProgressStyle};
 use std::env;
 
-fn experiment_condition (cards: &[&Card]) -> bool {
+#[inline]
+fn experiment_condition (cards: [Option<Card>; 2]) -> bool {
     assert!(cards.len() == 2, "experiment expects two cards");
-    cards.iter().any(|c| c.suit == Suit::Diamonds)
-        || 
-    cards.iter().filter(|c| c.rank == Rank::Seven).count() == 1
+    let one_diamond = cards.iter()
+        .filter_map(|&c| c)
+        .any(|c| c.suit == Suit::Diamonds);
+    let exclusive_seven = cards.iter()
+        .filter_map(|&c| c)
+        .filter(|c| c.rank == Rank::Seven)
+        .count() == 1;
+    
+    one_diamond || exclusive_seven
 }
 
 #[derive(Default)]
@@ -42,10 +49,10 @@ fn main() {
         .progress_with_style(style)
         .map_init(
             rand::thread_rng,
-            |rng, _| deck.draw_random(rng, 2)
+            |rng, _| deck.draw_random(rng)
         )
         .map(
-            |e| experiment_condition(e.as_slice()) 
+            |e| experiment_condition(e) 
         )
         .fold(
             PosNegCount::default,

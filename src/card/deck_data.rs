@@ -2,9 +2,16 @@ use super::card_data::{Card, Rank, Suit};
 use rand::{rngs::ThreadRng, seq::SliceRandom};
 pub struct Deck(Vec<Card>);
 
+#[derive(Debug, PartialEq)]
+struct NotEnoughCardsError();
+
 impl Deck {
-    pub fn draw_random(&self, rng: &mut ThreadRng, amount: usize) -> Vec<&Card> {
-        self.0.choose_multiple(rng, amount).collect()
+    pub fn draw_random<const N: usize>(&self, rng: &mut ThreadRng) -> [Option<Card>; N] {
+        let mut buf: [Option<Card>; N] = [None; N];
+        for (card, buf_slot) in self.0.choose_multiple(rng, N).cloned().zip(buf.iter_mut()) {
+            buf_slot.insert(card);
+        }
+        buf
     }
 }
 
