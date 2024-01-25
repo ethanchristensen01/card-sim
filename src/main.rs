@@ -47,6 +47,7 @@ fn main() {
     let range = 0..size;
     let count: PosNegCount = range.into_par_iter()
         .progress_with_style(style)
+        .panic_fuse()
         .map_init(
             rand::thread_rng,
             |rng, _| deck.draw_random(rng)
