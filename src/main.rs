@@ -9,15 +9,14 @@ use std::env;
 #[inline]
 fn experiment_condition (cards: [Option<Card>; 2]) -> bool {
     assert!(!cards.iter().any(Option::is_none), "experiment expects two cards");
-    let one_diamond = cards.iter()
+    cards.iter()
         .filter_map(|&c| c)
-        .any(|c| c.suit == Suit::Diamonds);
-    let exclusive_seven = cards.iter()
+        .any(|c| c.suit == Suit::Diamonds) ||
+    
+    cards.iter()
         .filter_map(|&c| c)
         .filter(|c| c.rank == Rank::Seven)
-        .count() == 1;
-    
-    one_diamond || exclusive_seven
+        .count() == 1
 }
 
 #[derive(Default)]
