@@ -56,7 +56,8 @@ fn main() {
                     PosNegCount { positive: acc.positive, negative: acc.negative + 1 }
                 }
             }
-        ).reduce(
+        )
+        .reduce(
             PosNegCount::default,
             |a, b| PosNegCount {
                 positive: a.positive + b.positive,
