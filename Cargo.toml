@@ -9,4 +9,9 @@ num = "0.4.1"
 rand = "0.8.5"
 rayon = "1.8.1"
 
+[lints.clippy]
+enum_glob_use="deny"
+pedantic="deny"
+nursery="deny"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

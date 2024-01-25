@@ -1,13 +1,12 @@
 mod card;
-use card::*;
-use num::rational::*;
-use num::ToPrimitive;
+use card::{Card, Rank, Suit, Deck};
+use num::{rational::Ratio, ToPrimitive};
 use rayon::prelude::*;
-use indicatif::{ParallelProgressIterator, ProgressStyle};
 use rayon::ThreadPoolBuilder;
+use indicatif::{ParallelProgressIterator, ProgressStyle};
 use std::env;
 
-fn experiment_condition (cards: Vec<&Card>) -> bool {
+fn experiment_condition (cards: &[&Card]) -> bool {
     assert!(cards.len() == 2, "experiment expects two cards");
     cards.iter().any(|c| c.suit == Suit::Diamonds)
         || 
@@ -22,15 +21,16 @@ struct PosNegCount {
 
 fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
+    #[allow(clippy::get_first)]
     let num_experiments: u32 = args.get(0)
-        .expect("Missing first argument: experiment count")
+        .unwrap_or(&("4000000000".to_string()))
         .parse::<u32>()
         .expect("Couldn't parse experiment count");
     if let Some(num_threads) = args.get(1).map(|a| a.parse::<u8>()) {
         let num_threads = num_threads.expect("couldn't parse thread count");
         ThreadPoolBuilder::new().num_threads(num_threads.into()).build_global().unwrap();
     }
-    let deck = card::Deck::default();
+    let deck = Deck::default();
     
     let style = ProgressStyle::with_template(
         "{percent}% {wide_bar} [{elapsed_precise}]\n{bytes_per_sec}\n{eta} left"
@@ -41,14 +41,14 @@ fn main() {
     let count: PosNegCount = range.into_par_iter()
         .progress_with_style(style)
         .map_init(
-            || rand::thread_rng(),
+            rand::thread_rng,
             |rng, _| deck.draw_random(rng, 2)
         )
         .map(
-            experiment_condition 
+            |e| experiment_condition(e.as_slice()) 
         )
         .fold(
-            || PosNegCount::default(),
+            PosNegCount::default,
             |acc, v| {
                 if v {
                     PosNegCount { positive: acc.positive + 1, negative: acc.negative }
@@ -57,7 +57,7 @@ fn main() {
                 }
             }
         ).reduce(
-            || PosNegCount::default(),
+            PosNegCount::default,
             |a, b| PosNegCount {
                 positive: a.positive + b.positive,
                 negative: a.negative + b.negative

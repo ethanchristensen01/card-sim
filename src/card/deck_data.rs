@@ -1,4 +1,4 @@
-use super::card_data::*;
+use super::card_data::{Card, Rank, Suit};
 use rand::{rngs::ThreadRng, seq::SliceRandom};
 pub struct Deck(Vec<Card>);
 
@@ -30,7 +30,7 @@ impl Default for Deck {
                 rank: Rank::try_from(i).unwrap()
             });
         }
-        Deck(deck)
+        Self(deck)
     }
 }
 
