@@ -7,7 +7,7 @@ What is the probability that you draw *at least* one diamond or *exactly* one 7?
 This program calculates that probability.
 
 ## Run
-`cargo run --release [num_experiments: u32] (num_threads: u8)`
+`cargo run --release (num_experiments: u32) (num_threads: u8)`
 
 ## Cool crates
 - [rand](https://crates.io/crates/rand): random generation
